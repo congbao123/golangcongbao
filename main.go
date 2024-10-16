@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/ulule/limiter/v3"
@@ -34,6 +35,7 @@ const (
 )
 
 func main() {
+	godotenv.Load()
 	db, err := gorm.Open(postgres.Open(os.Getenv("CONNECTION_STRING")), &gorm.Config{})
 	if err != nil {
 		log.Fatalln(err)
