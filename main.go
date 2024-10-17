@@ -68,7 +68,7 @@ func main() {
 	middlewareRateLimit := middleware.RateLimiter(limiter)
 
 	restApi.NewItemHandler(apiVersion, itemService, middlewareAuth, middlewareRateLimit)
-	restApi.NewUserHandler(apiVersion, userService)
+	restApi.NewUserHandler(apiVersion, userService, middlewareAuth)
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

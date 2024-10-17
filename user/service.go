@@ -2,17 +2,22 @@ package user
 
 import (
 	"errors"
+	"time"
 	"todo-app/domain"
 	"todo-app/pkg/clients"
 	"todo-app/pkg/tokenprovider"
 	"todo-app/pkg/util"
 
 	"github.com/google/uuid"
+
 )
 
 type UserRepo interface {
 	Save(user *domain.UserCreate) error
 	GetUser(conditions map[string]any) (*domain.User, error)
+	Update(id uuid.UUID, user *domain.UserUpdate) error
+	Delete(id uuid.UUID) error
+	GetByIdUser(id uuid.UUID) (domain.User, error)
 }
 
 type Hasher interface {
@@ -34,6 +39,7 @@ func NewUserService(repo UserRepo, hasher Hasher, tokenProvider tokenprovider.Pr
 		expiry:        expiry,
 	}
 }
+
 
 func (s *userService) Register(data *domain.UserCreate) error {
 	if err := data.Validate(); err != nil {
@@ -88,4 +94,33 @@ func (s *userService) Login(data *domain.UserLogin) (tokenprovider.Token, error)
 	}
 
 	return accessToken, nil
+}
+
+
+func (s *userService) GetByIdUser(id uuid.UUID) (domain.User, error) {
+    user, err := s.userRepo.GetByIdUser(id)
+    if err != nil {
+        return domain.User{}, err
+    }
+
+    return user, nil
+}
+
+
+func (s *userService) UpdateUser(id uuid.UUID, user *domain.UserUpdate) error {
+	user.UpdatedAt = time.Now()
+	err := s.userRepo.Update(id, user)
+	if err != nil {
+		return clients.ErrCannotUpdateEntity(user.TableName(), err)
+	}
+
+	return nil
+}
+func (s *userService) DeleteUser(id uuid.UUID) error {
+	err := s.userRepo.Delete(id)
+	if err != nil {
+		return clients.ErrCannotDeleteEntity(domain.User{}.TableName(), err)
+	}
+
+	return nil
 }

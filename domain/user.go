@@ -92,7 +92,11 @@ type UserLogin struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
-
+type UserUpdate struct {
+	FirstName *string `json:"first_name"`
+	LastName  *string `json:"last_name"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
 func (UserLogin) TableName() string {
 	return User{}.TableName()
 }
@@ -110,3 +114,4 @@ var (
 		"ErrEmailExisted",
 	)
 )
+func (UserUpdate) TableName() string { return User{}.TableName() }
